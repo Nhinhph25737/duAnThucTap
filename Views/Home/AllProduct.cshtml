@@ -1,0 +1,130 @@
+﻿@model IEnumerable<_3_Asp.Net_MVC.Models.Product>
+
+@{
+    ViewData["Title"] = "EditProduct";
+    ShoppingDBContext dBContext = new ShoppingDBContext();
+    List<Category> categories = dBContext.Categories.ToList();
+
+}
+<h2 style="margin-top : 120px">TẤT CẢ SẢN PHẨM</h2>
+<div class="row" style="margin-top:20px">
+    <div class="col-2">
+    </div>
+
+    <div class="col-3">
+        <div class="input-group">
+            @using (Html.BeginForm("Search", "Home", FormMethod.Get))
+            {
+                <div class="input-group">
+                    <input type="text" class="form-control" value="" name="tim" placeholder="Tìm kiếm theo tên">
+                    <button type="submit" class="btn btn-primary">
+                        <strong>Tìm kiếm</strong>
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="input-group">
+            @using (Html.BeginForm("FilterCategory", "Home", FormMethod.Get))
+            {
+                <div class="input-group">
+                    <select class="form-select" name="category">
+                        <option>--Chọn phân loại--</option>
+                        @foreach (var item in @categories)
+                        {
+                            <option>@item.Name</option>
+                        }
+                    </select>
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-primary" style="width:100px">
+                            <strong>Lọc</strong>
+                        </button>
+                    </span>
+                </div>
+
+            }
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="input-group">
+            @using (Html.BeginForm("FilterPrice", "Home", FormMethod.Get))
+            {
+                <div class="input-group">
+                    @Html.DropDownList("value", new SelectList(new[]
+                {
+                new SelectListItem { Text = "--Sắp xếp--", Value = "" },
+                new SelectListItem { Text = "Giá tăng dần", Value = "0" },
+                new SelectListItem { Text = "Giá giảm dần", Value = "1" }
+                }, "Value", "Text"), new { @class = "form-select" })
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-primary" style="width:100px">
+                            <strong>Sắp xếp</strong>
+                        </button>
+                    </span>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<form asp-action="EditProduct" class="p-3 mb-2 bg-light text-dark" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="shop-default shop-cards shop-tech container">
+        <div class="row" style="margin-top: 10px;">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-3">
+                    <div class="block product no-border z-depth-2-top z-depth-2--hover" style="margin-top:20px">
+                        <div class="block-image">
+                            <a>
+                                @if (@item.Image != null)
+                                {
+                                    <img src="~/ProductImages/@item.Image" class="img-center" style="width: 100%;">
+
+                                }
+                                else
+                                {
+                                    <img class="img-center" style="width: 100%;" src="~/productimages/null.jpg" />
+                                }
+                            </a>
+                            <span class="product-ribbon product-ribbon-right product-ribbon--style-1 bg-blue text-uppercase">Hot</span>
+                        </div>
+
+                        <div class="block-body text-center">
+                            <a href="/Home/Detail/@item.ID" style="font-size: 20px; color: #0187a4;">
+                                <h5><strong>@item.ProductName</strong></h5>
+
+                            </a>
+                            <span class="product-description" style="font-size: 18px; color: red; font-weight: bold;">
+                                @item.Price.ToString("n0") VND
+                            </span> <br>
+                            <a style="font-size: 16px; color: #0187a4;">
+                                @foreach (var c in categories)
+                                {
+                                    if (c.ID == @item.TypeName)
+                                    {
+                                        @c.Name
+                                    }
+                                }
+                            </a>
+                            <div class="product-buttons mt-4">
+                                <div class="row align-items-center">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-dark" type="button" style="height:50px;">
+                                            <span style="font-size:20px; margin-right:15px"><i class="fa-solid fa-cart-shopping"></i></span>
+                                            <a href="/ShoppingCart/AddToCart/@item.ID">Thêm vào giỏ hàng</a>
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </div>
+    </div>
+</form>
